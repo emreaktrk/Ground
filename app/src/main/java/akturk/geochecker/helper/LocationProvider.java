@@ -6,9 +6,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
-
-@SuppressWarnings("ResourceType")
-public class LocationProvider {
+@SuppressWarnings("MissingPermission")
+public final class LocationProvider {
 
     private LocationManager mLocationManager;
     private SingleLocationListener mListener;
@@ -22,10 +21,6 @@ public class LocationProvider {
     }
 
     public void startSeeking() {
-        if (checkGPSProviderEnabled()) {
-            return;
-        }
-
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (mCallback != null) {
                 mCallback.onGPSProviderDisabled();
@@ -46,18 +41,6 @@ public class LocationProvider {
         if (mCallback != null) {
             mCallback.onLocationStoppedSeeking();
         }
-    }
-
-    private boolean checkGPSProviderEnabled() {
-        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            if (mCallback != null) {
-                mCallback.onGPSProviderDisabled();
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     public void setOnLocationProviderListener(OnLocationProviderListener callback) {

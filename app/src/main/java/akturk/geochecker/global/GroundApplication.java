@@ -1,7 +1,17 @@
 package akturk.geochecker.global;
 
-/**
- * Created by emrea on 17/03/2016.
- */
-public class GroundApplication {
+import android.app.Application;
+import android.content.Intent;
+
+import akturk.geochecker.unity.bridge.BridgeService;
+
+public final class GroundApplication extends Application {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        Intent intent = new Intent(this, BridgeService.class);
+        startService(intent);
+    }
 }

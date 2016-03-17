@@ -5,17 +5,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import akturk.geochecker.R;
 import akturk.geochecker.helper.LocationProvider;
 
-public class GroundActivity extends Activity implements LocationProvider.OnLocationProviderListener {
+public final class GroundActivity extends Activity implements LocationProvider.OnLocationProviderListener {
 
     private LocationProvider mLocationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_bridge);
 
         mLocationProvider = new LocationProvider(this);
         mLocationProvider.setOnLocationProviderListener(this);

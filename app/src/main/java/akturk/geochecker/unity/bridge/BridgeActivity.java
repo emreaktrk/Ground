@@ -1,44 +1,63 @@
 package akturk.geochecker.unity.bridge;
 
-import android.app.Activity;
-import android.location.Location;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.os.IBinder;
+import android.util.Log;
 
-import akturk.geochecker.R;
-import akturk.geochecker.helper.LocationProvider;
+import com.unity3d.player.UnityPlayerActivity;
 
-public class BridgeActivity extends Activity implements LocationProvider.OnLocationProviderListener {
+public final class BridgeActivity extends UnityPlayerActivity {
 
-    private LocationProvider mLocationProvider;
+    private LocationServiceConnection mConnection;
+    private BridgeService mService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_bridge);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
 
-        mLocationProvider = new LocationProvider(this);
-        mLocationProvider.setOnLocationProviderListener(this);
-        mLocationProvider.startSeeking();
+        mConnection = new LocationServiceConnection();
     }
 
     @Override
-    public void onLocationStartedSeeking() {
-        Toast.makeText(this, "onLocationStartedSeeking", Toast.LENGTH_SHORT).show();
+    protected void onResume() {
+        super.onResume();
+
+        startTracking();
     }
 
     @Override
-    public void onLocationStoppedSeeking() {
-        Toast.makeText(this, "onLocationStoppedSeeking", Toast.LENGTH_SHORT).show();
+    protected void onPause() {
+        super.onPause();
+
+        stopTracking();
     }
 
-    @Override
-    public void onLocationFound(Location location) {
-        Toast.makeText(this, "onLocationFound", Toast.LENGTH_SHORT).show();
+    public void startTracking() {
+        Intent intent = new Intent(this, BridgeService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    @Override
-    public void onGPSProviderDisabled() {
-        Toast.makeText(this, "onGPSProviderDisabled", Toast.LENGTH_SHORT).show();
+    public void stopTracking() {
+        unbindService(mConnection);
+    }
+
+    private class LocationServiceConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            BridgeService.ServiceBinder binder = (BridgeService.ServiceBinder) service;
+            mService = binder.getService();
+
+            Log.d("UNITY", "Service connected: " + mService);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("UNITY", "Service disconnected: " + mService);
+        }
     }
 }
