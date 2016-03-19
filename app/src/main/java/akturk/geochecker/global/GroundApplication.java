@@ -10,8 +10,5 @@ public final class GroundApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        Intent intent = new Intent(this, BridgeService.class);
-        startService(intent);
     }
 }

@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="akturk.geochecker">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:name=".global.GroundApplication"
@@ -13,14 +13,25 @@
         <!-- Bridge Activity !-->
         <activity
             android:name=".unity.bridge.BridgeActivity"
+            android:excludeFromRecents="true"
             android:label="Activity Bridge">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <meta-data
                 android:name="unityplayer.UnityActivity"
-                android:value="true" />
+                android:value="false"/>
+        </activity>
+
+        <!-- Bridge Unity Activity !-->
+        <activity
+            android:name=".unity.bridge.BridgeUnityActivity"
+            android:excludeFromRecents="true"
+            android:label="Activity Unity Bridge">
+            <meta-data
+                android:name="unityplayer.UnityActivity"
+                android:value="true"/>
         </activity>
 
         <!-- Bridge Service !-->
@@ -34,7 +45,6 @@
         <activity
             android:name=".unity.ground.GroundActivity"
             android:label="Activity Ground"/>
-
     </application>
 
 </manifest>

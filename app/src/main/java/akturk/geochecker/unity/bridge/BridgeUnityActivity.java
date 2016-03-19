@@ -1,6 +1,5 @@
 package akturk.geochecker.unity.bridge;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +8,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.unity3d.player.UnityPlayerActivity;
+
 import akturk.geochecker.global.SharedData;
 
-public final class BridgeActivity extends Activity {
+public final class BridgeUnityActivity extends UnityPlayerActivity {
 
     private LocationServiceConnection mConnection;
     private BridgeService mService;

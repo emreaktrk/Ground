@@ -2,16 +2,16 @@ package akturk.geochecker.helper;
 
 import android.content.Context;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
+import akturk.geochecker.global.SharedData;
 
 @SuppressWarnings("MissingPermission")
 public final class LocationProvider {
 
     private LocationManager mLocationManager;
     private SingleLocationListener mListener;
-    private Location mLastKnownLocation;
 
     private OnLocationProviderListener mCallback;
 
@@ -32,7 +32,7 @@ public final class LocationProvider {
             mCallback.onLocationStartedSeeking();
         }
 
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, Integer.MAX_VALUE, Integer.MAX_VALUE, mListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, SharedData.getMinTime(), SharedData.getMinDistance(), mListener);
     }
 
     public void stopSeeking() {
@@ -47,23 +47,17 @@ public final class LocationProvider {
         mCallback = callback;
     }
 
-    public Location getLastKnownLocation() {
-        return mLastKnownLocation;
-    }
 
     private class SingleLocationListener implements android.location.LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {
-            if (location != null) {
+            if (location == null) {
+                return;
+            }
 
-                mLastKnownLocation = location;
-
-                if (mCallback != null) {
-                    mCallback.onLocationFound(location);
-                }
-
-                stopSeeking();
+            if (mCallback != null) {
+                mCallback.onLocationFound(location);
             }
         }
 

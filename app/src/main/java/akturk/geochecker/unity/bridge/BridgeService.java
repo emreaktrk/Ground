@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import akturk.geochecker.helper.LocationProvider;
 
@@ -42,21 +43,25 @@ public final class BridgeService extends Service implements LocationProvider.OnL
     @Override
     public void onLocationStartedSeeking() {
         Log.d("LOCATION", "Started Seeking");
+        Toast.makeText(BridgeService.this, "Started Seeking", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onLocationStoppedSeeking() {
         Log.d("LOCATION", "Stoped Seeking");
+        Toast.makeText(BridgeService.this, "Stoped Seeking", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onLocationFound(Location location) {
         Log.d("LOCATION", "Location Found");
+        Toast.makeText(BridgeService.this, "Location Found", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onGPSProviderDisabled() {
         Log.d("LOCATION", "GPS Disabled");
+        Toast.makeText(BridgeService.this, "GPS Disabled", Toast.LENGTH_SHORT).show();
     }
 
     public class ServiceBinder extends Binder {
