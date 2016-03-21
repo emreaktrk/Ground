@@ -13,12 +13,7 @@
         <!-- Bridge Activity !-->
         <activity
             android:name=".unity.bridge.BridgeActivity"
-            android:excludeFromRecents="true"
             android:label="Activity Bridge">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
             <meta-data
                 android:name="unityplayer.UnityActivity"
                 android:value="false"/>
@@ -27,7 +22,6 @@
         <!-- Bridge Unity Activity !-->
         <activity
             android:name=".unity.bridge.BridgeUnityActivity"
-            android:excludeFromRecents="true"
             android:label="Activity Unity Bridge">
             <meta-data
                 android:name="unityplayer.UnityActivity"
@@ -44,7 +38,12 @@
         <!-- Ground Activity !-->
         <activity
             android:name=".unity.ground.GroundActivity"
-            android:label="Activity Ground"/>
+            android:label="Activity Ground">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
