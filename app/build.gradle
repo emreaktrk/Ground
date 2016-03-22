@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
@@ -20,7 +20,7 @@ android {
 
 dependencies {
     compile files('libs/unity_development.jar')
-    compile 'com.google.code.gson:gson:2.4'
+    compile files('libs/gson-2.4.jar')
 }
 
 task deleteOldJar(type: Delete) {

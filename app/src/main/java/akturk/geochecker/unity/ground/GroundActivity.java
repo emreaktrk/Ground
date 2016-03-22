@@ -1,12 +1,12 @@
 package akturk.geochecker.unity.ground;
 
-import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.unity3d.player.UnityPlayerActivity;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import akturk.geochecker.helper.SharedPreferenceEngine;
 import akturk.geochecker.model.GeoLocation;
 import akturk.geochecker.model.GeoLocationList;
 
-public final class GroundActivity extends Activity implements LocationProvider.OnLocationProviderListener {
+public final class GroundActivity extends UnityPlayerActivity implements LocationProvider.OnLocationProviderListener {
 
     private LocationProvider mLocationProvider;
 
