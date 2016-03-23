@@ -1,11 +1,9 @@
-package akturk.geochecker.helper;
+package com.akturk.plugin.helper;
 
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-
-import akturk.geochecker.global.SharedData;
 
 @SuppressWarnings("MissingPermission")
 public final class LocationProvider {
@@ -32,7 +30,7 @@ public final class LocationProvider {
             mCallback.onLocationStartedSeeking();
         }
 
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, SharedData.getMinTime(), SharedData.getMinDistance(), mListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, mListener);
     }
 
     public void stopSeeking() {

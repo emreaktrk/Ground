@@ -1,4 +1,4 @@
-package akturk.geochecker.model;
+package com.akturk.plugin.model;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,6 +1,7 @@
-package akturk.geochecker.model;
+package com.akturk.plugin.model;
 
 import android.location.Location;
+
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,50 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="akturk.geochecker">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
-        android:name=".global.GroundApplication"
         android:icon="@mipmap/ic_launcher">
-
-        <!-- Ground Activity !-->
         <activity
-            android:name=".unity.ground.GroundActivity"
-            android:label="Activity Ground">
+            android:name=".TestActivity"
+            android:label="Test Activity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-            <meta-data
-                android:name="unityplayer.UnityActivity"
-                android:value="true" />
         </activity>
-
-        <!-- Bridge Activity !-->
-        <activity
-            android:name=".unity.bridge.BridgeActivity"
-            android:label="Activity Bridge">
-            <meta-data
-                android:name="unityplayer.UnityActivity"
-                android:value="false" />
-        </activity>
-
-        <!-- Bridge Unity Activity !-->
-        <activity
-            android:name=".unity.bridge.BridgeUnityActivity"
-            android:label="Activity Unity Bridge">
-            <meta-data
-                android:name="unityplayer.UnityActivity"
-                android:value="true" />
-        </activity>
-
-        <!-- Bridge Service !-->
-        <service
-            android:name=".unity.bridge.BridgeService"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
 </manifest>

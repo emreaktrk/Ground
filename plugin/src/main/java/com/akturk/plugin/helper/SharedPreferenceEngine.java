@@ -1,4 +1,4 @@
-package akturk.geochecker.helper;
+package com.akturk.plugin.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;

@@ -1,60 +1,69 @@
-package akturk.geochecker.unity.ground;
+package com.akturk.plugin;
 
+import android.app.Activity;
 import android.location.Location;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.akturk.plugin.helper.LocationProvider;
+import com.akturk.plugin.helper.SharedPreferenceEngine;
+import com.akturk.plugin.model.GeoLocation;
+import com.akturk.plugin.model.GeoLocationList;
 import com.google.gson.Gson;
-import com.unity3d.player.UnityPlayerActivity;
 
 import java.util.ArrayList;
 
-import akturk.geochecker.global.SharedData;
-import akturk.geochecker.helper.LocationProvider;
-import akturk.geochecker.helper.SharedPreferenceEngine;
-import akturk.geochecker.model.GeoLocation;
-import akturk.geochecker.model.GeoLocationList;
+@SuppressWarnings("unused")
+public class LocationChecker implements LocationProvider.OnLocationProviderListener {
 
-public final class GroundActivity extends UnityPlayerActivity implements LocationProvider.OnLocationProviderListener {
-
-    private LocationProvider mLocationProvider;
+    private Activity mActivity;
+    private LocationProvider mProvider;
 
     private GeoLocationList mData;
     private Gson mGson;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public LocationChecker(final Activity activity) {
+        mActivity = activity;
+        mProvider = new LocationProvider(mActivity);
+        mProvider.setOnLocationProviderListener(this);
 
         mGson = new Gson();
+    }
 
-        SharedData.setMinTime(5000);
-        SharedData.setMinDistance(0);
+    public void start() {
+        mProvider.startSeeking();
+    }
 
-        mLocationProvider = new LocationProvider(this);
-        mLocationProvider.setOnLocationProviderListener(this);
-        mLocationProvider.startSeeking();
+    public void stop() {
+        mProvider.stopSeeking();
     }
 
     @Override
     public void onLocationStartedSeeking() {
+        Toast.makeText(mActivity, "Tracking started", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking started");
 
-        String rawData = SharedPreferenceEngine.getInstance(this).getString(SharedPreferenceEngine.LOCATIONS, getDummyLocations());
+        String rawData = SharedPreferenceEngine.getInstance(mActivity).getString(SharedPreferenceEngine.LOCATIONS, getDummyLocations());
         mData = mGson.fromJson(rawData, GeoLocationList.class);
     }
 
     @Override
     public void onLocationStoppedSeeking() {
+        Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
     }
 
     @Override
     public void onLocationFound(Location location) {
+        Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
         for (GeoLocation geoLocation : mData.getList()) {
+            if (geoLocation.isUnlock()) {
+                Log.d("LOCATION", geoLocation.getName() + " is already unlocked");
+                continue;
+            }
+
             float distance = geoLocation.toLocation().distanceTo(location);
             Log.d("LOCATION", "Distance between to " + geoLocation.getName() + " : " + distance);
 
@@ -72,16 +81,19 @@ public final class GroundActivity extends UnityPlayerActivity implements Locatio
 
     @Override
     public void onGPSProviderDisabled() {
-        Toast.makeText(this, "onGPSProviderDisabled", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
+        Log.d("LOCATION", "GPS is disabled");
     }
 
     private void saveData() {
         String rawData = mGson.toJson(mData);
         SharedPreferenceEngine
-                .getInstance(this)
+                .getInstance(mActivity)
                 .edit()
                 .putString(SharedPreferenceEngine.LOCATIONS, rawData)
                 .apply();
+
+        Toast.makeText(mActivity, "Data saved", Toast.LENGTH_SHORT).show();
     }
 
     private String getDummyLocations() {
@@ -110,5 +122,4 @@ public final class GroundActivity extends UnityPlayerActivity implements Locatio
 
         return mGson.toJson(geoLocationList);
     }
-
 }
