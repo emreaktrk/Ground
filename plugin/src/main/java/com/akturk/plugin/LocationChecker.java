@@ -31,11 +31,21 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
     }
 
     public void start() {
-        mProvider.startSeeking();
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProvider.startSeeking();
+            }
+        });
     }
 
     public void stop() {
-        mProvider.stopSeeking();
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProvider.stopSeeking();
+            }
+        });
     }
 
     @Override
