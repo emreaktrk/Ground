@@ -10,6 +10,7 @@ import com.akturk.plugin.helper.SharedPreferenceEngine;
 import com.akturk.plugin.model.GeoLocation;
 import com.akturk.plugin.model.GeoLocationList;
 import com.google.gson.Gson;
+import com.unity3d.player.UnityPlayer;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
     private Activity mActivity;
     private LocationProvider mProvider;
 
+    private String mRawData;
     private GeoLocationList mData;
     private Gson mGson;
 
@@ -30,10 +32,11 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         mGson = new Gson();
     }
 
-    public void start() {
+    public void start(final String rawData) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                mRawData = rawData;
                 mProvider.startSeeking();
             }
         });
@@ -53,14 +56,18 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "Tracking started", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking started");
 
-        String rawData = SharedPreferenceEngine.getInstance(mActivity).getString(SharedPreferenceEngine.LOCATIONS, getDummyLocations());
-        mData = mGson.fromJson(rawData, GeoLocationList.class);
+//        String rawData = SharedPreferenceEngine.getInstance(mActivity).getString(SharedPreferenceEngine.LOCATIONS, getDummyLocations());
+        mData = mGson.fromJson(mRawData, GeoLocationList.class);
+
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
 
     @Override
     public void onLocationStoppedSeeking() {
         Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
+
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
     }
 
     @Override
@@ -87,12 +94,17 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         }
 
         saveData();
+
+        String rawData = mGson.toJson(mData);
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", rawData);
     }
 
     @Override
     public void onGPSProviderDisabled() {
         Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
+
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
     }
 
     private void saveData() {
