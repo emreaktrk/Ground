@@ -2,18 +2,19 @@ package com.akturk.plugin.helper;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
 @SuppressWarnings("MissingPermission")
-public final class LocationProvider {
+public final class GPSManager {
 
     private LocationManager mLocationManager;
     private SingleLocationListener mListener;
 
     private OnLocationProviderListener mCallback;
 
-    public LocationProvider(Context context) {
+    public GPSManager(Context context) {
         mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         mListener = new SingleLocationListener();
     }
@@ -46,7 +47,7 @@ public final class LocationProvider {
     }
 
 
-    private class SingleLocationListener implements android.location.LocationListener {
+    private class SingleLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location location) {

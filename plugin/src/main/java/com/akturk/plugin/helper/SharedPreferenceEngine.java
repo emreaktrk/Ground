@@ -3,7 +3,7 @@ package com.akturk.plugin.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class SharedPreferenceEngine {
+public final class SharedPreferenceEngine {
 
     public static final String LOCATIONS = "locations";
 

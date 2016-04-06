@@ -1,11 +1,13 @@
 package com.akturk.plugin;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.akturk.plugin.helper.LocationProvider;
+import com.akturk.plugin.helper.BeaconManager;
+import com.akturk.plugin.helper.GPSManager;
 import com.akturk.plugin.helper.SharedPreferenceEngine;
 import com.akturk.plugin.model.Beacon;
 import com.akturk.plugin.model.Target;
@@ -13,22 +15,30 @@ import com.akturk.plugin.model.TargetList;
 import com.google.gson.Gson;
 import com.unity3d.player.UnityPlayer;
 
+
 import java.util.ArrayList;
 
 @SuppressWarnings("unused")
-public class LocationChecker implements LocationProvider.OnLocationProviderListener {
+public class LocationChecker implements GPSManager.OnLocationProviderListener, BeaconManager.OnBeaconProviderListener {
 
     private Activity mActivity;
-    private LocationProvider mProvider;
+    private GPSManager mGPSManager;
+    private BeaconManager mBeaconManager;
 
     private String mRawData;
     private TargetList mData;
     private Gson mGson;
 
+    private boolean mInBackground;
+
     public LocationChecker(final Activity activity) {
         mActivity = activity;
-        mProvider = new LocationProvider(mActivity);
-        mProvider.setOnLocationProviderListener(this);
+
+        mGPSManager = new GPSManager(mActivity);
+        mGPSManager.setOnLocationProviderListener(this);
+
+        mBeaconManager = new BeaconManager(mActivity);
+        mBeaconManager.setOnBeaconProviderListener(this);
 
         mGson = new Gson();
     }
@@ -38,7 +48,8 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
             @Override
             public void run() {
                 mRawData = rawData;
-                mProvider.startSeeking();
+                mGPSManager.startSeeking();
+                mBeaconManager.startSeeking();
             }
         });
     }
@@ -47,7 +58,8 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mProvider.stopSeeking();
+                mGPSManager.stopSeeking();
+                mBeaconManager.stopSeeking();
             }
         });
     }
@@ -59,7 +71,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
 
         mData = mGson.fromJson(mRawData, TargetList.class);
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
 
     @Override
@@ -67,7 +79,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
     }
 
     @Override
@@ -75,28 +87,35 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
-        for (Target geoLocation : mData.getList()) {
-            if (geoLocation.isUnlock()) {
-                Log.d("LOCATION", geoLocation.getName() + " is already unlocked");
+        for (Target target : mData.getList()) {
+            if (target.isUnlock()) {
+                Log.d("LOCATION", target.getName() + " is already unlocked");
                 continue;
             }
 
-            float distance = geoLocation.toLocation().distanceTo(location);
-            Log.d("LOCATION", "Distance between to " + geoLocation.getName() + " : " + distance);
+            float distance = target.toLocation().distanceTo(location);
+            Log.d("LOCATION", "Distance between to " + target.getName() + " : " + distance);
 
-            if (distance <= geoLocation.getRange()) {
-                Log.d("LOCATION", geoLocation.getName() + " is in range");
+            if (distance <= target.getRange()) {
+                Log.d("LOCATION", target.getName() + " is in range");
 
-                geoLocation.setUnlock(true);
+                if (target.hasBeacon()) {
+                    if (!mBeaconManager.isScanning()) {
+                        mBeaconManager.startSeeking();
+                    }
+
+                    mBeaconManager.addTarget(target);
+                } else {
+                    target.setUnlock(true);
+
+//                    UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+                }
+
             } else {
-                Log.d("LOCATION", geoLocation.getName() + " is not in range");
+                Log.d("LOCATION", target.getName() + " is not in range");
             }
         }
 
-        saveData();
-
-        String rawData = mGson.toJson(mData);
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", rawData);
     }
 
     @Override
@@ -104,7 +123,33 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+    }
+
+    @Override
+    public void onBeaconStartedSeeking() {
+        Toast.makeText(mActivity, "Beacon started", Toast.LENGTH_SHORT).show();
+        Log.d("BEACON", "Beacon started");
+    }
+
+    @Override
+    public void onBeaconStoppedSeeking() {
+        Toast.makeText(mActivity, "Beacon stopped", Toast.LENGTH_SHORT).show();
+        Log.d("BEACON", "Beacon stopped");
+    }
+
+    @Override
+    public void onBluetoothDisabled() {
+        Toast.makeText(mActivity, "Bluetooth disabled", Toast.LENGTH_SHORT).show();
+        Log.d("BEACON", "Bluetooth is disabled");
+    }
+
+    @Override
+    public void onDeviceFound(BluetoothDevice device, Target target) {
+        Toast.makeText(mActivity, "Device found", Toast.LENGTH_SHORT).show();
+        Log.d("BEACON", "Device found");
+
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
     }
 
     private void saveData() {
@@ -116,6 +161,14 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
                 .apply();
 
         Toast.makeText(mActivity, "Data saved", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean isInBackground() {
+        return mInBackground;
+    }
+
+    public void setInBackground(boolean background) {
+        this.mInBackground = background;
     }
 
     private String getDummyLocations() {

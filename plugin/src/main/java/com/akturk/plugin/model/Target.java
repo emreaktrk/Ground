@@ -100,6 +100,10 @@ public final class Target implements Serializable {
         this.mBeacons = beacons;
     }
 
+    public boolean hasBeacon() {
+        return this.mBeacons != null && this.mBeacons.size() > 0;
+    }
+
     public Location toLocation() {
         Location location = new Location(mName);
         location.setLatitude(mLatitude);
