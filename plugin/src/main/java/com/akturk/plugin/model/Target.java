@@ -6,8 +6,9 @@ import android.location.Location;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
-public final class GeoLocation implements Serializable {
+public final class Target implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,11 +24,17 @@ public final class GeoLocation implements Serializable {
     @SerializedName("longitude")
     private long mLongitude;
 
+    @SerializedName("altitude")
+    private long mAltitude;
+
     @SerializedName("unlock")
     private boolean mUnlock;
 
     @SerializedName("range")
     private int mRange;
+
+    @SerializedName("beacons")
+    private ArrayList<Beacon> mBeacons;
 
     public void setId(int id) {
         this.mId = id;
@@ -75,6 +82,22 @@ public final class GeoLocation implements Serializable {
 
     public int getRange() {
         return mRange;
+    }
+
+    public long getAltitude() {
+        return mAltitude;
+    }
+
+    public void setAltitude(long altitude) {
+        this.mAltitude = altitude;
+    }
+
+    public ArrayList<Beacon> getBeacons() {
+        return mBeacons;
+    }
+
+    public void setBeacons(ArrayList<Beacon> beacons) {
+        this.mBeacons = beacons;
     }
 
     public Location toLocation() {

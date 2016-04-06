@@ -7,8 +7,9 @@ import android.widget.Toast;
 
 import com.akturk.plugin.helper.LocationProvider;
 import com.akturk.plugin.helper.SharedPreferenceEngine;
-import com.akturk.plugin.model.GeoLocation;
-import com.akturk.plugin.model.GeoLocationList;
+import com.akturk.plugin.model.Beacon;
+import com.akturk.plugin.model.Target;
+import com.akturk.plugin.model.TargetList;
 import com.google.gson.Gson;
 import com.unity3d.player.UnityPlayer;
 
@@ -21,7 +22,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
     private LocationProvider mProvider;
 
     private String mRawData;
-    private GeoLocationList mData;
+    private TargetList mData;
     private Gson mGson;
 
     public LocationChecker(final Activity activity) {
@@ -56,8 +57,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "Tracking started", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking started");
 
-//        String rawData = SharedPreferenceEngine.getInstance(mActivity).getString(SharedPreferenceEngine.LOCATIONS, getDummyLocations());
-        mData = mGson.fromJson(mRawData, GeoLocationList.class);
+        mData = mGson.fromJson(mRawData, TargetList.class);
 
         UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
@@ -75,7 +75,7 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
         Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
-        for (GeoLocation geoLocation : mData.getList()) {
+        for (Target geoLocation : mData.getList()) {
             if (geoLocation.isUnlock()) {
                 Log.d("LOCATION", geoLocation.getName() + " is already unlocked");
                 continue;
@@ -119,27 +119,38 @@ public class LocationChecker implements LocationProvider.OnLocationProviderListe
     }
 
     private String getDummyLocations() {
-        GeoLocation locationFirst = new GeoLocation();
+        Target locationFirst = new Target();
         locationFirst.setId(0);
         locationFirst.setName("Point 1");
         locationFirst.setRange(1000);
         locationFirst.setUnlock(false);
         locationFirst.setLatitude(40);
         locationFirst.setLongitude(40);
+        locationFirst.setAltitude(100);
 
-        GeoLocation locationSecond = new GeoLocation();
+        ArrayList<Beacon> beacons = new ArrayList<>();
+        Beacon beacon = new Beacon();
+        beacon.setMajor(9);
+        beacon.setMinor(1);
+        beacon.setUUID("760D2862-F66A-4AC5-A2D1-3E303C32030E");
+        beacons.add(beacon);
+
+        Target locationSecond = new Target();
         locationSecond.setId(1);
         locationSecond.setName("Point 2");
         locationSecond.setRange(5000);
         locationSecond.setUnlock(true);
         locationSecond.setLatitude(50);
         locationSecond.setLongitude(50);
+        locationSecond.setAltitude(0);
+        locationSecond.setBeacons(beacons);
 
-        ArrayList<GeoLocation> list = new ArrayList<>();
+
+        ArrayList<Target> list = new ArrayList<>();
         list.add(locationFirst);
         list.add(locationSecond);
 
-        GeoLocationList geoLocationList = new GeoLocationList();
+        TargetList geoLocationList = new TargetList();
         geoLocationList.setList(list);
 
         return mGson.toJson(geoLocationList);
