@@ -2,6 +2,7 @@ package com.akturk.plugin;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
@@ -71,7 +72,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
         mData = mGson.fromJson(mRawData, TargetList.class);
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
 
     @Override
@@ -79,7 +80,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
     }
 
     @Override
@@ -108,14 +109,17 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                 } else {
                     target.setUnlock(true);
 
-//                    UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+                    if (mInBackground) {
+                        saveData(target.getId() + "");
+                    } else {
+                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+                    }
                 }
 
             } else {
                 Log.d("LOCATION", target.getName() + " is not in range");
             }
         }
-
     }
 
     @Override
@@ -123,7 +127,25 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+        if (mInBackground) {
+            if (!OnetimeController.mGPS.isPushSent) {
+                NotificationFacade notificationFacade = new NotificationFacade(mActivity);
+                notificationFacade
+                        .getBuilder()
+                        .setContentTitle("GPS disabled")
+                        .setContentText("Your geolocation is disabled. We are unable to detect your location.")
+                        .setAutoCancel(true);
+                notificationFacade.show();
+
+                OnetimeController.mBluetooth.isPushSent = true;
+            }
+        } else {
+            if (!OnetimeController.mGPS.isDialogShown) {
+                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+
+                OnetimeController.mGPS.isDialogShown = true;
+            }
+        }
     }
 
     @Override
@@ -142,6 +164,26 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
     public void onBluetoothDisabled() {
         Toast.makeText(mActivity, "Bluetooth disabled", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Bluetooth is disabled");
+
+        if (mInBackground) {
+            if (!OnetimeController.mBluetooth.isPushSent) {
+                NotificationFacade notificationFacade = new NotificationFacade(mActivity);
+                notificationFacade
+                        .getBuilder()
+                        .setContentTitle("Bluetooth disabled")
+                        .setContentText("Your bluetooth is disabled. We are unable to detect beacons.")
+                        .setAutoCancel(true);
+                notificationFacade.show();
+
+                OnetimeController.mBluetooth.isPushSent = true;
+            }
+        } else {
+            if (!OnetimeController.mBluetooth.isDialogShown) {
+                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
+
+                OnetimeController.mBluetooth.isDialogShown = true;
+            }
+        }
     }
 
     @Override
@@ -149,18 +191,46 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Device found", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Device found");
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+        int position = mData.getList().indexOf(target);
+        mData.getList().get(position).setUnlock(true);
+
+        if (mInBackground) {
+            saveData(target.getId() + "");
+        } else {
+            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+        }
+
+
     }
 
-    private void saveData() {
-        String rawData = mGson.toJson(mData);
+    private void saveData(String id) {
+        String data = readData();
+
         SharedPreferenceEngine
                 .getInstance(mActivity)
                 .edit()
-                .putString(SharedPreferenceEngine.LOCATIONS, rawData)
+                .putString(SharedPreferenceEngine.LOCATIONS, data + "-" + id)
+                .apply();
+    }
+
+    private String readData() {
+        return SharedPreferenceEngine
+                .getInstance(mActivity)
+                .getString(SharedPreferenceEngine.LOCATIONS, "");
+    }
+
+    public String returnData() {
+        String data = SharedPreferenceEngine
+                .getInstance(mActivity)
+                .getString(SharedPreferenceEngine.LOCATIONS, "");
+
+        SharedPreferenceEngine
+                .getInstance(mActivity)
+                .edit()
+                .putString(SharedPreferenceEngine.LOCATIONS, "")
                 .apply();
 
-        Toast.makeText(mActivity, "Data saved", Toast.LENGTH_SHORT).show();
+        return data;
     }
 
     public boolean isInBackground() {
@@ -186,6 +256,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         beacon.setMajor(9);
         beacon.setMinor(1);
         beacon.setUUID("760D2862-F66A-4AC5-A2D1-3E303C32030E");
+        beacon.setAdress("760D2862-F66A-4AC5-A2D1-3E303C32030E");
         beacons.add(beacon);
 
         Target locationSecond = new Target();
@@ -197,7 +268,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         locationSecond.setLongitude(50);
         locationSecond.setAltitude(0);
         locationSecond.setBeacons(beacons);
-
 
         ArrayList<Target> list = new ArrayList<>();
         list.add(locationFirst);

@@ -2,7 +2,6 @@ package com.akturk.plugin.helper;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -16,8 +15,6 @@ import java.util.ArrayList;
 @SuppressWarnings("MissingPermission")
 public final class BeaconManager extends BluetoothGattCallback implements BluetoothAdapter.LeScanCallback {
 
-    private Context mContext;
-
     private BluetoothAdapter mBluetoothAdapter;
     private OnBeaconProviderListener mCallback;
 
@@ -26,8 +23,6 @@ public final class BeaconManager extends BluetoothGattCallback implements Blueto
     private ArrayList<Target> mList;
 
     public BeaconManager(Context context) {
-        mContext = context;
-
         BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
@@ -67,7 +62,7 @@ public final class BeaconManager extends BluetoothGattCallback implements Blueto
     public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
         for (Target target : mList) {
             for (Beacon beacon : target.getBeacons()) {
-                if (TextUtils.equals(beacon.getUUID(), bluetoothDevice.getUuids().toString())) {
+                if (TextUtils.equals(beacon.getAdress(), bluetoothDevice.getAddress())) {
                     if (mCallback != null) {
                         mCallback.onDeviceFound(bluetoothDevice, target);
                         mList.remove(target);

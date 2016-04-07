@@ -18,6 +18,9 @@ public final class Beacon implements Serializable {
     @SerializedName("range")
     private int mRange;
 
+    @SerializedName("adress")
+    private String mAdress;
+
     public int getMinor() {
         return mMinor;
     }
@@ -48,5 +51,13 @@ public final class Beacon implements Serializable {
 
     public void setRange(int range) {
         this.mRange = range;
+    }
+
+    public String getAdress() {
+        return mAdress;
+    }
+
+    public void setAdress(String adress) {
+        this.mAdress = adress;
     }
 }
