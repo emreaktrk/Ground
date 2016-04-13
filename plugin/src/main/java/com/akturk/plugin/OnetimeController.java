@@ -2,16 +2,16 @@ package com.akturk.plugin;
 
 final class OnetimeController {
 
-    static GPS mGPS;
-    static BLUETOOTH mBluetooth;
+    static GPS mGPS = new GPS();
+    static BLUETOOTH mBluetooth = new BLUETOOTH();
 
 
-    class GPS {
+    static class GPS {
         boolean isPushSent;
         boolean isDialogShown;
     }
 
-    class BLUETOOTH {
+    static class BLUETOOTH {
         boolean isPushSent;
         boolean isDialogShown;
     }

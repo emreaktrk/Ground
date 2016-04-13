@@ -2,11 +2,11 @@ package com.akturk.plugin;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
 import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.akturk.plugin.adapter.TargetListAdapter;
 import com.akturk.plugin.helper.BeaconManager;
 import com.akturk.plugin.helper.GPSManager;
 import com.akturk.plugin.helper.SharedPreferenceEngine;
@@ -15,7 +15,6 @@ import com.akturk.plugin.model.Target;
 import com.akturk.plugin.model.TargetList;
 import com.google.gson.Gson;
 import com.unity3d.player.UnityPlayer;
-
 
 import java.util.ArrayList;
 
@@ -31,6 +30,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
     private Gson mGson;
 
     private boolean mInBackground;
+    private boolean mAdapt;
 
     public LocationChecker(final Activity activity) {
         mActivity = activity;
@@ -70,9 +70,14 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Tracking started", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking started");
 
-        mData = mGson.fromJson(mRawData, TargetList.class);
+        if (mAdapt) {
+            TargetListAdapter adaptList = mGson.fromJson(mRawData, TargetListAdapter.class);
+            mData = adaptList.adapt();
+        } else {
+            mData = mGson.fromJson(mRawData, TargetList.class);
+        }
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
 
     @Override
@@ -80,7 +85,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
+//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
     }
 
     @Override
@@ -112,7 +117,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                     if (mInBackground) {
                         saveData(target.getId() + "");
                     } else {
-                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+//                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
                     }
                 }
 
@@ -141,7 +146,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mGPS.isDialogShown) {
-                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+//                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
 
                 OnetimeController.mGPS.isDialogShown = true;
             }
@@ -179,7 +184,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mBluetooth.isDialogShown) {
-                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
+//                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
 
                 OnetimeController.mBluetooth.isDialogShown = true;
             }
@@ -197,7 +202,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         if (mInBackground) {
             saveData(target.getId() + "");
         } else {
-            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+//            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
         }
 
 
@@ -239,6 +244,14 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     public void setInBackground(boolean background) {
         this.mInBackground = background;
+    }
+
+    public boolean isAdapt() {
+        return mAdapt;
+    }
+
+    public void setAdapt(boolean adapt) {
+        mAdapt = adapt;
     }
 
     private String getDummyLocations() {

@@ -19,13 +19,13 @@ public final class Target implements Serializable {
     private String mName;
 
     @SerializedName("latitude")
-    private long mLatitude;
+    private double mLatitude;
 
     @SerializedName("longitude")
-    private long mLongitude;
+    private double mLongitude;
 
     @SerializedName("altitude")
-    private long mAltitude;
+    private double mAltitude;
 
     @SerializedName("unlock")
     private boolean mUnlock;
@@ -68,11 +68,11 @@ public final class Target implements Serializable {
         return mName;
     }
 
-    public long getLatitude() {
+    public double getLatitude() {
         return mLatitude;
     }
 
-    public long getLongitude() {
+    public double getLongitude() {
         return mLongitude;
     }
 
@@ -84,7 +84,7 @@ public final class Target implements Serializable {
         return mRange;
     }
 
-    public long getAltitude() {
+    public double getAltitude() {
         return mAltitude;
     }
 
@@ -119,28 +119,12 @@ public final class Target implements Serializable {
 
         Target target = (Target) o;
 
-        if (mId != target.mId) return false;
-        if (mLatitude != target.mLatitude) return false;
-        if (mLongitude != target.mLongitude) return false;
-        if (mAltitude != target.mAltitude) return false;
-        if (mUnlock != target.mUnlock) return false;
-        if (mRange != target.mRange) return false;
-        if (mName != null ? !mName.equals(target.mName) : target.mName != null) return false;
+        return mId == target.mId;
 
-        return mBeacons != null ? mBeacons.equals(target.mBeacons) : target.mBeacons == null;
     }
 
     @Override
     public int hashCode() {
-        int result = mId;
-        result = 31 * result + (mName != null ? mName.hashCode() : 0);
-        result = 31 * result + (int) (mLatitude ^ (mLatitude >>> 32));
-        result = 31 * result + (int) (mLongitude ^ (mLongitude >>> 32));
-        result = 31 * result + (int) (mAltitude ^ (mAltitude >>> 32));
-        result = 31 * result + (mUnlock ? 1 : 0);
-        result = 31 * result + mRange;
-        result = 31 * result + (mBeacons != null ? mBeacons.hashCode() : 0);
-
-        return result;
+        return mId;
     }
 }
