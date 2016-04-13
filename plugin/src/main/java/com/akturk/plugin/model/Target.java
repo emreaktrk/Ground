@@ -31,7 +31,7 @@ public final class Target implements Serializable {
     private boolean mUnlock;
 
     @SerializedName("range")
-    private int mRange;
+    private double mRange;
 
     @SerializedName("beacons")
     private ArrayList<Beacon> mBeacons;
@@ -80,8 +80,12 @@ public final class Target implements Serializable {
         return mUnlock;
     }
 
-    public int getRange() {
+    public double getRange() {
         return mRange;
+    }
+
+    public double getRangeAsMeters() {
+        return mRange * 1000;
     }
 
     public double getAltitude() {

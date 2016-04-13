@@ -14,7 +14,6 @@ public class TestActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         LocationChecker checker = new LocationChecker(this);
-        checker.setAdapt(true);
         checker.start(mRawData);
     }
 }

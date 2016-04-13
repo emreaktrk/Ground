@@ -50,7 +50,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             public void run() {
                 mRawData = rawData;
                 mGPSManager.startSeeking();
-                mBeaconManager.startSeeking();
             }
         });
     }
@@ -102,7 +101,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             float distance = target.toLocation().distanceTo(location);
             Log.d("LOCATION", "Distance between to " + target.getName() + " : " + distance);
 
-            if (distance <= target.getRange()) {
+            if (distance <= target.getRangeAsMeters()) {
                 Log.d("LOCATION", target.getName() + " is in range");
 
                 if (target.hasBeacon()) {
