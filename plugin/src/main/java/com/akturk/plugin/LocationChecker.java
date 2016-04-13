@@ -77,7 +77,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             mData = mGson.fromJson(mRawData, TargetList.class);
         }
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
     }
 
     @Override
@@ -85,7 +85,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
 
-//        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
     }
 
     @Override
@@ -117,7 +117,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                     if (mInBackground) {
                         saveData(target.getId() + "");
                     } else {
-//                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
                     }
                 }
 
@@ -146,7 +146,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mGPS.isDialogShown) {
-//                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
 
                 OnetimeController.mGPS.isDialogShown = true;
             }
@@ -184,7 +184,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mBluetooth.isDialogShown) {
-//                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
+                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
 
                 OnetimeController.mBluetooth.isDialogShown = true;
             }
@@ -202,7 +202,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         if (mInBackground) {
             saveData(target.getId() + "");
         } else {
-//            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
         }
 
 
