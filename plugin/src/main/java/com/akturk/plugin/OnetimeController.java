@@ -7,12 +7,12 @@ final class OnetimeController {
 
 
     static class GPS {
-        boolean isPushSent;
+        boolean isNotificationShown;
         boolean isDialogShown;
     }
 
     static class BLUETOOTH {
-        boolean isPushSent;
+        boolean isNotificationShown;
         boolean isDialogShown;
     }
 

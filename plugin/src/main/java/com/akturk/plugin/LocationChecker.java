@@ -3,6 +3,8 @@ package com.akturk.plugin;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.location.Location;
+import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -92,6 +94,8 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
+        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSFound", location.getLatitude() + "-" + location.getLongitude());
+
         for (Target target : mData.getList()) {
             if (target.isUnlock()) {
                 Log.d("LOCATION", target.getName() + " is already unlocked");
@@ -131,17 +135,30 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                start(mRawData);
+            }
+        }, 5000);
+
         if (mInBackground) {
-            if (!OnetimeController.mGPS.isPushSent) {
+            if (!OnetimeController.mGPS.isNotificationShown) {
+                int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                if (iconId == 0) {
+                    return;
+                }
+
                 NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                 notificationFacade
                         .getBuilder()
                         .setContentTitle("GPS disabled")
                         .setContentText("Your geolocation is disabled. We are unable to detect your location.")
+                        .setSmallIcon(iconId)
                         .setAutoCancel(true);
                 notificationFacade.show();
 
-                OnetimeController.mBluetooth.isPushSent = true;
+                OnetimeController.mGPS.isNotificationShown = true;
             }
         } else {
             if (!OnetimeController.mGPS.isDialogShown) {
@@ -170,7 +187,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         Log.d("BEACON", "Bluetooth is disabled");
 
         if (mInBackground) {
-            if (!OnetimeController.mBluetooth.isPushSent) {
+            if (!OnetimeController.mBluetooth.isNotificationShown) {
                 NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                 notificationFacade
                         .getBuilder()
@@ -179,7 +196,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                         .setAutoCancel(true);
                 notificationFacade.show();
 
-                OnetimeController.mBluetooth.isPushSent = true;
+                OnetimeController.mBluetooth.isNotificationShown = true;
             }
         } else {
             if (!OnetimeController.mBluetooth.isDialogShown) {
@@ -209,11 +226,12 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     private void saveData(String id) {
         String data = readData();
+        String content = TextUtils.isEmpty(data) ? id : (data + "-" + id);
 
         SharedPreferenceEngine
                 .getInstance(mActivity)
                 .edit()
-                .putString(SharedPreferenceEngine.LOCATIONS, data + "-" + id)
+                .putString(SharedPreferenceEngine.LOCATIONS, content)
                 .apply();
     }
 
@@ -228,13 +246,17 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                 .getInstance(mActivity)
                 .getString(SharedPreferenceEngine.LOCATIONS, "");
 
+        flushData();
+
+        return data;
+    }
+
+    private void flushData() {
         SharedPreferenceEngine
                 .getInstance(mActivity)
                 .edit()
                 .putString(SharedPreferenceEngine.LOCATIONS, "")
                 .apply();
-
-        return data;
     }
 
     public boolean isInBackground() {
