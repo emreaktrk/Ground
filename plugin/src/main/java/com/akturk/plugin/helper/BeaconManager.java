@@ -64,7 +64,7 @@ public final class BeaconManager extends BluetoothGattCallback implements Blueto
             for (Beacon beacon : target.getBeacons()) {
                 if (TextUtils.equals(beacon.getAdress(), bluetoothDevice.getAddress())) {
                     if (mCallback != null) {
-                        mCallback.onDeviceFound(bluetoothDevice, target);
+                        mCallback.onBeaconFound(bluetoothDevice, target);
                         mList.remove(target);
                     }
                 }
@@ -88,7 +88,7 @@ public final class BeaconManager extends BluetoothGattCallback implements Blueto
 
         void onBluetoothDisabled();
 
-        void onDeviceFound(BluetoothDevice device, Target target);
+        void onBeaconFound(BluetoothDevice device, Target target);
     }
 
 

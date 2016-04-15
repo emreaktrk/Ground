@@ -188,11 +188,17 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
         if (mInBackground) {
             if (!OnetimeController.mBluetooth.isNotificationShown) {
+                int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                if (iconId == 0) {
+                    return;
+                }
+
                 NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                 notificationFacade
                         .getBuilder()
                         .setContentTitle("Bluetooth disabled")
                         .setContentText("Your bluetooth is disabled. We are unable to detect beacons.")
+                        .setSmallIcon(iconId)
                         .setAutoCancel(true);
                 notificationFacade.show();
 
@@ -208,9 +214,9 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
     }
 
     @Override
-    public void onDeviceFound(BluetoothDevice device, Target target) {
-        Toast.makeText(mActivity, "Device found", Toast.LENGTH_SHORT).show();
-        Log.d("BEACON", "Device found");
+    public void onBeaconFound(BluetoothDevice device, Target target) {
+        Toast.makeText(mActivity, "Beacon found", Toast.LENGTH_SHORT).show();
+        Log.d("BEACON", "Beacon found");
 
         int position = mData.getList().indexOf(target);
         mData.getList().get(position).setUnlock(true);
