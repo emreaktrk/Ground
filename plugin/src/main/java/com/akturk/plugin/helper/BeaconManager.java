@@ -76,7 +76,11 @@ public final class BeaconManager extends BluetoothGattCallback implements Blueto
         return mScanning;
     }
 
-    public void addTarget(Target object) {
+    public void addTargetIfNotExist(Target object) {
+        if (mList.contains(object)) {
+            return;
+        }
+
         mList.add(object);
     }
 

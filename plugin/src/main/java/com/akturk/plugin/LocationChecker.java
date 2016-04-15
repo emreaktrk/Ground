@@ -113,7 +113,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                         mBeaconManager.startSeeking();
                     }
 
-                    mBeaconManager.addTarget(target);
+                    mBeaconManager.addTargetIfNotExist(target);
                 } else {
                     target.setUnlock(true);
 
