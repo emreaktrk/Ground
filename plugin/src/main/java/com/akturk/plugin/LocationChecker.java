@@ -6,7 +6,6 @@ import android.location.Location;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.akturk.plugin.adapter.TargetListAdapter;
 import com.akturk.plugin.helper.BeaconManager;
@@ -68,7 +67,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onLocationStartedSeeking() {
-        Toast.makeText(mActivity, "Tracking started", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking started");
 
         if (mAdapt) {
@@ -83,7 +81,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onLocationStoppedSeeking() {
-        Toast.makeText(mActivity, "Tracking stopped", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Tracking stopped");
 
         UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
@@ -91,7 +88,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onLocationFound(Location location) {
-        Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
         UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSFound", location.getLatitude() + "-" + location.getLongitude());
@@ -132,7 +129,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onGPSProviderDisabled() {
-        Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
 
         new Handler().postDelayed(new Runnable() {
@@ -171,19 +168,19 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onBeaconStartedSeeking() {
-        Toast.makeText(mActivity, "Beacon started", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "Beacon started", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Beacon started");
     }
 
     @Override
     public void onBeaconStoppedSeeking() {
-        Toast.makeText(mActivity, "Beacon stopped", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "Beacon stopped", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Beacon stopped");
     }
 
     @Override
     public void onBluetoothDisabled() {
-        Toast.makeText(mActivity, "Bluetooth disabled", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mActivity, "Bluetooth disabled", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Bluetooth is disabled");
 
         if (mInBackground) {
@@ -215,7 +212,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onBeaconFound(BluetoothDevice device, Target target) {
-        Toast.makeText(mActivity, "Beacon found", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Beacon found");
 
         int position = mData.getList().indexOf(target);
