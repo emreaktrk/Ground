@@ -76,22 +76,21 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             mData = mGson.fromJson(mRawData, TargetList.class);
         }
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStartedSeeking", "");
+        UnityPlayer.UnitySendMessage("Bridge", "OnLocationStartedSeeking", "");
     }
 
     @Override
     public void onLocationStoppedSeeking() {
         Log.d("LOCATION", "Tracking stopped");
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationStoppedSeeking", "");
+        UnityPlayer.UnitySendMessage("Bridge", "OnLocationStoppedSeeking", "");
     }
 
     @Override
     public void onLocationFound(Location location) {
-//        Toast.makeText(mActivity, "Location found", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "Found location > Lat : " + location.getLatitude() + " Lon : " + location.getLongitude());
 
-        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSFound", location.getLatitude() + "-" + location.getLongitude());
+        UnityPlayer.UnitySendMessage("Bridge", "OnGPSFound", location.getLatitude() + "-" + location.getLongitude());
 
         for (Target target : mData.getList()) {
             if (target.isUnlock()) {
@@ -116,8 +115,22 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
                     if (mInBackground) {
                         saveData(target.getId() + "");
+
+                        int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                        if (iconId == 0) {
+                            return;
+                        }
+
+                        NotificationFacade notificationFacade = new NotificationFacade(mActivity);
+                        notificationFacade
+                                .getBuilder()
+                                .setContentTitle("Target Found")
+                                .setContentText("You have unlocked a target.")
+                                .setSmallIcon(iconId)
+                                .setAutoCancel(true);
+                        notificationFacade.show();
                     } else {
-                        UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+                        UnityPlayer.UnitySendMessage("Bridge", "OnLocationFound", target.getId() + "");
                     }
                 }
 
@@ -129,7 +142,6 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onGPSProviderDisabled() {
-//        Toast.makeText(mActivity, "GPS disabled", Toast.LENGTH_SHORT).show();
         Log.d("LOCATION", "GPS is disabled");
 
         new Handler().postDelayed(new Runnable() {
@@ -159,7 +171,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mGPS.isDialogShown) {
-                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnGPSProviderDisabled", "");
+                UnityPlayer.UnitySendMessage("Bridge", "OnGPSProviderDisabled", "");
 
                 OnetimeController.mGPS.isDialogShown = true;
             }
@@ -168,19 +180,16 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
     @Override
     public void onBeaconStartedSeeking() {
-//        Toast.makeText(mActivity, "Beacon started", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Beacon started");
     }
 
     @Override
     public void onBeaconStoppedSeeking() {
-//        Toast.makeText(mActivity, "Beacon stopped", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Beacon stopped");
     }
 
     @Override
     public void onBluetoothDisabled() {
-//        Toast.makeText(mActivity, "Bluetooth disabled", Toast.LENGTH_SHORT).show();
         Log.d("BEACON", "Bluetooth is disabled");
 
         if (mInBackground) {
@@ -203,7 +212,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             }
         } else {
             if (!OnetimeController.mBluetooth.isDialogShown) {
-                UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnBluetoothDisabled", "");
+                UnityPlayer.UnitySendMessage("Bridge", "OnBluetoothDisabled", "");
 
                 OnetimeController.mBluetooth.isDialogShown = true;
             }
@@ -219,8 +228,22 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
         if (mInBackground) {
             saveData(target.getId() + "");
+
+            int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+            if (iconId == 0) {
+                return;
+            }
+
+            NotificationFacade notificationFacade = new NotificationFacade(mActivity);
+            notificationFacade
+                    .getBuilder()
+                    .setContentTitle("Target Found")
+                    .setContentText("You have unlocked a target.")
+                    .setSmallIcon(iconId)
+                    .setAutoCancel(true);
+            notificationFacade.show();
         } else {
-            UnityPlayer.UnitySendMessage("LOCATIONCHECKER", "OnLocationFound", target.getId() + "");
+            UnityPlayer.UnitySendMessage("Bridge", "OnLocationFound", target.getId() + "");
         }
 
 
