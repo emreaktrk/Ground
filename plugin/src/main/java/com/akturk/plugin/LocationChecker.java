@@ -116,7 +116,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                     if (mInBackground) {
                         saveData(target.getId() + "");
 
-                        int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                        int iconId = mActivity.getResources().getIdentifier("notification_icon", "drawable", mActivity.getPackageName());
                         if (iconId == 0) {
                             return;
                         }
@@ -153,7 +153,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
         if (mInBackground) {
             if (!OnetimeController.mGPS.isNotificationShown) {
-                int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                int iconId = mActivity.getResources().getIdentifier("notification_icon", "drawable", mActivity.getPackageName());
                 if (iconId == 0) {
                     return;
                 }
@@ -161,8 +161,8 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                 NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                 notificationFacade
                         .getBuilder()
-                        .setContentTitle("GPS disabled")
-                        .setContentText("Your geolocation is disabled. We are unable to detect your location.")
+                        .setContentTitle("Time Looper")
+                        .setContentText("Please turn your phone's location on.")
                         .setSmallIcon(iconId)
                         .setAutoCancel(true);
                 notificationFacade.show();
@@ -194,7 +194,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
 
         if (mInBackground) {
             if (!OnetimeController.mBluetooth.isNotificationShown) {
-                int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+                int iconId = mActivity.getResources().getIdentifier("notification_icon", "drawable", mActivity.getPackageName());
                 if (iconId == 0) {
                     return;
                 }
@@ -202,8 +202,8 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                 NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                 notificationFacade
                         .getBuilder()
-                        .setContentTitle("Bluetooth disabled")
-                        .setContentText("Your bluetooth is disabled. We are unable to detect beacons.")
+                        .setContentTitle("Time Looper")
+                        .setContentText("Please turn your phone's bluetooth on.")
                         .setSmallIcon(iconId)
                         .setAutoCancel(true);
                 notificationFacade.show();
@@ -229,7 +229,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
         if (mInBackground) {
             saveData(target.getId() + "");
 
-            int iconId = mActivity.getResources().getIdentifier("app_icon", "drawable", mActivity.getPackageName());
+            int iconId = mActivity.getResources().getIdentifier("notification_icon", "drawable", mActivity.getPackageName());
             if (iconId == 0) {
                 return;
             }
@@ -237,8 +237,8 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
             NotificationFacade notificationFacade = new NotificationFacade(mActivity);
             notificationFacade
                     .getBuilder()
-                    .setContentTitle("Target Found")
-                    .setContentText("You have unlocked a target.")
+                    .setContentTitle("Time Looper")
+                    .setContentText("You can now watch " + target.getName() + " video.")
                     .setSmallIcon(iconId)
                     .setAutoCancel(true);
             notificationFacade.show();
