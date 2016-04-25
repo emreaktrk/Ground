@@ -124,7 +124,7 @@ public class LocationChecker implements GPSManager.OnLocationProviderListener, B
                         NotificationFacade notificationFacade = new NotificationFacade(mActivity);
                         notificationFacade
                                 .getBuilder()
-                                .setContentTitle("Target Found")
+                                .setContentTitle("Time Looper")
                                 .setContentText("You have unlocked a target.")
                                 .setSmallIcon(iconId)
                                 .setAutoCancel(true);
