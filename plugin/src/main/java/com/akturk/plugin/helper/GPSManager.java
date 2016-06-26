@@ -32,6 +32,19 @@ public final class GPSManager {
         }
 
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, mListener);
+
+        Location lastKnownLocationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Location lastKnownLocationNETWORK = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if (lastKnownLocationGPS != null) {
+            mListener.onLocationChanged(lastKnownLocationGPS);
+            return;
+        }
+
+        if (lastKnownLocationNETWORK != null) {
+            mListener.onLocationChanged(lastKnownLocationNETWORK);
+            return;
+        }
     }
 
     public void stopSeeking() {

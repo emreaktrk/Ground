@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 
 public final class NotificationFacade {
+
     private Context mContext;
     private Notification.Builder mBuilder;
     private NotificationManager mNotificationManager;
